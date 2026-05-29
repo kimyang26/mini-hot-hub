@@ -1,0 +1,213 @@
+{
+  "generatedAt": "2026-05-29T09:30:00.000Z",
+  "cacheTtlSeconds": 600,
+  "platforms": [
+    {
+      "source": "weibo",
+      "sourceName": "微博",
+      "listName": "热搜榜",
+      "status": "success",
+      "updatedAt": "2026-05-29T09:30:00.000Z",
+      "items": [
+        {
+          "rank": 1,
+          "title": "端午假期出行热度持续升温",
+          "url": "https://s.weibo.com/top/summary",
+          "heat": "热度 621万"
+        },
+        {
+          "rank": 2,
+          "title": "高考前最后一周如何调整作息",
+          "url": "https://s.weibo.com/top/summary",
+          "heat": "热度 488万"
+        },
+        {
+          "rank": 3,
+          "title": "国产游戏发布全新实机演示",
+          "url": "https://s.weibo.com/top/summary",
+          "heat": "热度 376万"
+        },
+        {
+          "rank": 4,
+          "title": "城市夜经济带动周边消费",
+          "url": "https://s.weibo.com/top/summary",
+          "heat": "热度 298万"
+        },
+        {
+          "rank": 5,
+          "title": "多地博物馆延长开放时间",
+          "url": "https://s.weibo.com/top/summary",
+          "heat": "热度 246万"
+        },
+        {
+          "rank": 6,
+          "title": "毕业季租房避坑指南",
+          "url": "https://s.weibo.com/top/summary",
+          "heat": "热度 203万"
+        },
+        {
+          "rank": 7,
+          "title": "低糖饮料真的更健康吗",
+          "url": "https://s.weibo.com/top/summary",
+          "heat": "热度 189万"
+        },
+        {
+          "rank": 8,
+          "title": "新一轮强对流天气来袭",
+          "url": "https://s.weibo.com/top/summary",
+          "heat": "热度 174万"
+        },
+        {
+          "rank": 9,
+          "title": "职场新人如何准备转正述职",
+          "url": "https://s.weibo.com/top/summary",
+          "heat": "热度 153万"
+        },
+        {
+          "rank": 10,
+          "title": "夏季防晒产品选购建议",
+          "url": "https://s.weibo.com/top/summary",
+          "heat": "热度 132万"
+        }
+      ]
+    },
+    {
+      "source": "zhihu",
+      "sourceName": "知乎",
+      "listName": "热榜",
+      "status": "success",
+      "updatedAt": "2026-05-29T09:28:00.000Z",
+      "items": [
+        {
+          "rank": 1,
+          "title": "为什么很多人会在项目刚开始时高估进度？",
+          "url": "https://www.zhihu.com/hot",
+          "heat": "842 万热度"
+        },
+        {
+          "rank": 2,
+          "title": "端午假期短途游有哪些值得关注的目的地？",
+          "url": "https://www.zhihu.com/hot",
+          "heat": "731 万热度"
+        },
+        {
+          "rank": 3,
+          "title": "大模型应用落地最难的环节是什么？",
+          "url": "https://www.zhihu.com/hot",
+          "heat": "695 万热度"
+        },
+        {
+          "rank": 4,
+          "title": "有哪些适合夏天阅读的非虚构作品？",
+          "url": "https://www.zhihu.com/hot",
+          "heat": "612 万热度"
+        },
+        {
+          "rank": 5,
+          "title": "高三学生考前应该减少刷题还是保持手感？",
+          "url": "https://www.zhihu.com/hot",
+          "heat": "584 万热度"
+        },
+        {
+          "rank": 6,
+          "title": "新能源车补能体验还有哪些提升空间？",
+          "url": "https://www.zhihu.com/hot",
+          "heat": "526 万热度"
+        },
+        {
+          "rank": 7,
+          "title": "年轻人开始重视体检说明了什么？",
+          "url": "https://www.zhihu.com/hot",
+          "heat": "487 万热度"
+        },
+        {
+          "rank": 8,
+          "title": "如何判断一个副业是否值得长期投入？",
+          "url": "https://www.zhihu.com/hot",
+          "heat": "451 万热度"
+        },
+        {
+          "rank": 9,
+          "title": "城市更新为什么越来越强调公共空间？",
+          "url": "https://www.zhihu.com/hot",
+          "heat": "419 万热度"
+        },
+        {
+          "rank": 10,
+          "title": "有哪些简单有效的睡前放松方法？",
+          "url": "https://www.zhihu.com/hot",
+          "heat": "386 万热度"
+        }
+      ]
+    },
+    {
+      "source": "bilibili",
+      "sourceName": "B站",
+      "listName": "热门",
+      "status": "success",
+      "updatedAt": "2026-05-29T09:26:00.000Z",
+      "items": [
+        {
+          "rank": 1,
+          "title": "十分钟看懂一台相机的核心参数",
+          "url": "https://www.bilibili.com/v/popular/all",
+          "heat": "综合热度 152万"
+        },
+        {
+          "rank": 2,
+          "title": "用三种方式复刻夏日街边小吃",
+          "url": "https://www.bilibili.com/v/popular/all",
+          "heat": "综合热度 139万"
+        },
+        {
+          "rank": 3,
+          "title": "从零搭一个个人作品集网站",
+          "url": "https://www.bilibili.com/v/popular/all",
+          "heat": "综合热度 118万"
+        },
+        {
+          "rank": 4,
+          "title": "这首游戏配乐为什么让人起鸡皮疙瘩",
+          "url": "https://www.bilibili.com/v/popular/all",
+          "heat": "综合热度 96万"
+        },
+        {
+          "rank": 5,
+          "title": "挑战一天只用公共交通逛完整座城",
+          "url": "https://www.bilibili.com/v/popular/all",
+          "heat": "综合热度 84万"
+        },
+        {
+          "rank": 6,
+          "title": "毕业论文排版常见问题集中修复",
+          "url": "https://www.bilibili.com/v/popular/all",
+          "heat": "综合热度 78万"
+        },
+        {
+          "rank": 7,
+          "title": "看懂一场足球比赛的基础战术",
+          "url": "https://www.bilibili.com/v/popular/all",
+          "heat": "综合热度 71万"
+        },
+        {
+          "rank": 8,
+          "title": "旧电脑升级固态硬盘体验记录",
+          "url": "https://www.bilibili.com/v/popular/all",
+          "heat": "综合热度 65万"
+        },
+        {
+          "rank": 9,
+          "title": "把一间小卧室改造成高效工作区",
+          "url": "https://www.bilibili.com/v/popular/all",
+          "heat": "综合热度 59万"
+        },
+        {
+          "rank": 10,
+          "title": "入门剪辑常用快捷键完整演示",
+          "url": "https://www.bilibili.com/v/popular/all",
+          "heat": "综合热度 53万"
+        }
+      ]
+    }
+  ]
+}

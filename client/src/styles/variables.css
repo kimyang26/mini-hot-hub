@@ -1,0 +1,21 @@
+:root {
+  color: #20242b;
+  background: #f6f8fb;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Microsoft YaHei", sans-serif;
+  font-synthesis: none;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --surface-muted: #f1f4f8;
+  --text: #20242b;
+  --muted: #667085;
+  --border: #dfe5ee;
+  --accent-weibo: #e5484d;
+  --accent-zhihu: #1f6feb;
+  --accent-bilibili: #00a1d6;
+  --rank-hot: #f97316;
+  --shadow: 0 16px 40px rgb(40 48 63 / 8%);
+}
