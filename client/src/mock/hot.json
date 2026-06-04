@@ -76,6 +76,8 @@
       "sourceName": "知乎",
       "listName": "热榜",
       "status": "success",
+      "error": true,
+      "message": "模拟测试：知乎热榜暂时获取失败",
       "updatedAt": "2026-05-29T09:28:00.000Z",
       "items": [
         {

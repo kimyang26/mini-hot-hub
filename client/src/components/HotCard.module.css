@@ -68,21 +68,57 @@
   padding: 8px 16px 12px;
 }
 
-.stateText,
+.loadingBlock,
+.stateBlock,
 .errorBlock {
   display: grid;
   min-height: 360px;
-  place-items: center;
   margin: 0;
   color: var(--muted);
   text-align: center;
 }
 
+.loadingBlock {
+  align-content: start;
+  gap: 12px;
+  padding: 10px 4px 0;
+}
+
+.skeletonLine {
+  display: block;
+  height: 32px;
+  overflow: hidden;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgb(241 244 248 / 0%) 0, rgb(255 255 255 / 80%) 50%, rgb(241 244 248 / 0%) 100%),
+    var(--surface-muted);
+  background-size: 220% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+.skeletonLine:nth-child(2n) {
+  width: 88%;
+}
+
+.skeletonLine:nth-child(3n) {
+  width: 72%;
+}
+
+.stateBlock,
 .errorBlock {
   gap: 14px;
   align-content: center;
+  place-items: center;
+  padding: 0 20px;
 }
 
+.stateBlock strong,
+.errorBlock strong {
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.stateBlock p,
 .errorBlock p {
   margin: 0;
 }
@@ -103,6 +139,22 @@
   border-top: 1px solid var(--border);
   color: var(--muted);
   font-size: 0.86rem;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 120% 0;
+  }
+
+  to {
+    background-position: -120% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonLine {
+    animation: none;
+  }
 }
 
 @media (max-width: 680px) {
