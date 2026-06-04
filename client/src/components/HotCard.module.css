@@ -54,12 +54,14 @@
 
 .badge {
   flex: 0 0 auto;
+  min-width: 48px;
   padding: 5px 9px;
   border-radius: 999px;
   background: var(--surface-muted);
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 700;
+  text-align: center;
 }
 
 .body {
@@ -111,5 +113,9 @@
 
   .body {
     padding-inline: 12px;
+  }
+
+  .header {
+    padding-inline: 16px;
   }
 }

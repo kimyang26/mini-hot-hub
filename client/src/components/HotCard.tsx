@@ -25,7 +25,7 @@ export function HotCard({ platform, isLoading = false, onRetry }: HotCardProps) 
           <p className={styles.sourceName}>{platform.sourceName}</p>
           <h2>{platform.listName}</h2>
         </div>
-        <span className={styles.badge}>Top 10</span>
+        <span className={styles.badge}>{platform.items.length} 条</span>
       </header>
 
       <div className={styles.body}>
