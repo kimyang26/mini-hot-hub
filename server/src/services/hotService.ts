@@ -1,12 +1,13 @@
 import { platformMeta, sources } from '../config/platforms';
 import { createMockProvider } from '../providers/mock';
 import type { HotProvider } from '../providers/types';
+import { createWeiboProvider } from '../providers/weibo';
 import type { HotPlatform, HotResponse, SourceKey } from '../types/hot';
 import { getCache, setCache } from '../utils/cache';
 import { env } from '../utils/env';
 
 const providers: Record<SourceKey, HotProvider> = {
-  weibo: createMockProvider('weibo'),
+  weibo: createWeiboProvider(),
   zhihu: createMockProvider('zhihu'),
   bilibili: createMockProvider('bilibili'),
 };
@@ -47,7 +48,12 @@ export async function getHotPlatform(
     }
 
     return platform;
-  } catch {
+  } catch (error) {
+    console.error(
+      `[provider error] ${source}`,
+      error instanceof Error ? error.message : 'Unknown provider error',
+    );
+
     return createErrorPlatform(source);
   }
 }
