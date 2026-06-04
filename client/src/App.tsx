@@ -3,6 +3,7 @@ import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { HotGrid } from './components/HotGrid';
 import { Layout } from './components/Layout';
+import { fetchHotPlatform } from './api/hot';
 import mockHotData from './mock/hot.json';
 import styles from './App.module.css';
 import type { HotPlatform, HotResponse } from './types/hot';
@@ -51,17 +52,65 @@ function normalizeMockResponse(response: MockHotResponse): HotResponse {
 }
 
 const mockResponse = normalizeMockResponse(mockHotData as MockHotResponse);
+const loadingDelayMs = 600;
+
+function replacePlatform(platforms: HotPlatform[], nextPlatform: HotPlatform): HotPlatform[] {
+  return platforms.map((platform) =>
+    platform.source === nextPlatform.source ? nextPlatform : platform,
+  );
+}
+
+function createRequestErrorPlatform(platform: HotPlatform): HotPlatform {
+  return {
+    ...platform,
+    status: 'error',
+    updatedAt: undefined,
+    items: [],
+    message: '微博 Mock API 暂时不可用，请确认 Express 服务已启动',
+  };
+}
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [platforms, setPlatforms] = useState<HotPlatform[]>(mockResponse.platforms);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
+    let isCancelled = false;
+
+    async function loadWeiboFromApi() {
+      const delayPromise = new Promise<void>((resolve) => {
+        window.setTimeout(resolve, loadingDelayMs);
+      });
+      const weiboPromise = fetchHotPlatform('weibo', 10)
+        .then((platform) => ({ type: 'success' as const, platform }))
+        .catch(() => ({ type: 'error' as const }));
+
+      const [result] = await Promise.all([weiboPromise, delayPromise]);
+
+      if (isCancelled) {
+        return;
+      }
+
+      setPlatforms((currentPlatforms) => {
+        const currentWeibo = currentPlatforms.find((platform) => platform.source === 'weibo');
+
+        if (result.type === 'success') {
+          return replacePlatform(currentPlatforms, result.platform);
+        }
+
+        if (currentWeibo) {
+          return replacePlatform(currentPlatforms, createRequestErrorPlatform(currentWeibo));
+        }
+
+        return currentPlatforms;
+      });
       setIsLoading(false);
-    }, 600);
+    }
+
+    void loadWeiboFromApi();
 
     return () => {
-      window.clearTimeout(timer);
+      isCancelled = true;
     };
   }, []);
 
@@ -69,7 +118,7 @@ function App() {
     <Layout>
       <main className={styles.main}>
         <Header generatedAt={mockResponse.generatedAt} />
-        <HotGrid isLoading={isLoading} platforms={mockResponse.platforms} />
+        <HotGrid isLoading={isLoading} platforms={platforms} />
       </main>
       <Footer cacheTtlSeconds={mockResponse.cacheTtlSeconds} />
     </Layout>
