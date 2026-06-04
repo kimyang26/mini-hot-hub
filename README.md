@@ -49,3 +49,25 @@ cd client && npm run lint
 cd server && npm run build
 cd server && npm run test
 ```
+
+## 缓存验证
+
+当前 Express Mock API 使用服务端内存 `Map` 缓存成功结果，缓存 key 按平台隔离，例如 `hot:weibo`、`hot:zhihu`、`hot:bilibili`。
+
+默认 TTL 为 600 秒，可通过 `server/.env` 中的 `CACHE_TTL` 调整。选择 600 秒是因为当前 PRD 要求页面约 10 分钟更新一次：这个时间既能减少重复请求，也能保持热榜数据对 MVP 足够新鲜。
+
+验证步骤：
+
+```bash
+cd server
+npm run dev
+```
+
+另开一个终端，连续请求同一个接口：
+
+```bash
+curl "http://localhost:3001/api/hot/weibo?limit=10"
+curl "http://localhost:3001/api/hot/weibo?limit=10"
+```
+
+第一次请求后，后端终端应看到 `[cache miss] hot:weibo`；第二次请求后，应看到 `[cache hit] hot:weibo`。缓存命中期间，该平台响应里的 `updatedAt` 会保持不变，前端卡片底部展示的更新时间也会随之保持一致。
