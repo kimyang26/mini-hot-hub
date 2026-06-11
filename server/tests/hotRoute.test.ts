@@ -43,22 +43,33 @@ const bilibiliResponse = {
   },
 };
 
+function mockFetch(failingHost?: string) {
+  const fetchMock = vi.fn(async (input: string | URL | Request) => {
+    const url = input instanceof Request ? input.url : String(input);
+
+    if (failingHost && url.includes(failingHost)) {
+      throw new Error('upstream failed');
+    }
+
+    const body = url.includes('zhihu.com')
+      ? zhihuResponse
+      : url.includes('bilibili.com')
+        ? bilibiliResponse
+        : weiboResponse;
+
+    return new Response(JSON.stringify(body), { status: 200 });
+  });
+
+  vi.stubGlobal('fetch', fetchMock);
+  return fetchMock;
+}
+
 describe('hot routes', () => {
+  let fetchMock: ReturnType<typeof mockFetch>;
+
   beforeEach(() => {
     clearCache();
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (input: string | URL | Request) => {
-        const url = input instanceof Request ? input.url : String(input);
-        const body = url.includes('zhihu.com')
-          ? zhihuResponse
-          : url.includes('bilibili.com')
-            ? bilibiliResponse
-            : weiboResponse;
-
-        return new Response(JSON.stringify(body), { status: 200 });
-      }),
-    );
+    fetchMock = mockFetch();
   });
 
   afterEach(() => {
@@ -84,6 +95,42 @@ describe('hot routes', () => {
     expect(response.body.platforms[2].source).toBe('bilibili');
     expect(response.body.platforms[2].items).toHaveLength(10);
     expect(response.body.platforms[2].items[0].title).toBe('B站真实热门 1');
+  });
+
+  it('keeps other platforms available when one provider fails', async () => {
+    vi.unstubAllGlobals();
+    fetchMock = mockFetch('zhihu.com');
+
+    const response = await request(app).get('/api/hot?limit=10&refresh=1').expect(200);
+    const weibo = response.body.platforms.find((platform: { source: string }) => platform.source === 'weibo');
+    const zhihu = response.body.platforms.find((platform: { source: string }) => platform.source === 'zhihu');
+    const bilibili = response.body.platforms.find(
+      (platform: { source: string }) => platform.source === 'bilibili',
+    );
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(weibo.status).toBe('success');
+    expect(weibo.items).toHaveLength(10);
+    expect(zhihu.status).toBe('error');
+    expect(zhihu.items).toHaveLength(0);
+    expect(zhihu.updatedAt).toBeUndefined();
+    expect(bilibili.status).toBe('success');
+    expect(bilibili.items).toHaveLength(10);
+  });
+
+  it('keeps updatedAt stable while cached data is valid', async () => {
+    const firstResponse = await request(app).get('/api/hot?limit=10').expect(200);
+    const secondResponse = await request(app).get('/api/hot?limit=10').expect(200);
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+
+    for (const firstPlatform of firstResponse.body.platforms) {
+      const secondPlatform = secondResponse.body.platforms.find(
+        (platform: { source: string }) => platform.source === firstPlatform.source,
+      );
+
+      expect(secondPlatform.updatedAt).toBe(firstPlatform.updatedAt);
+    }
   });
 
   it('returns one platform by source', async () => {

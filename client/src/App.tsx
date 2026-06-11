@@ -37,7 +37,7 @@ function createApiErrorPlatforms(): HotPlatform[] {
   return initialPlatforms.map((platform) => ({
     ...platform,
     status: 'error',
-    message: 'Mock API 暂时不可用，请确认 Express 服务已启动',
+    message: '后端 API 暂时不可用，请确认 Express 服务已启动',
   }));
 }
 
