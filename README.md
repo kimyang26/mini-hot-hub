@@ -36,9 +36,9 @@ npm run dev
 
 - `client/` 已初始化为 React + TypeScript + Vite + CSS Modules。
 - `server/` 已初始化为 Express + TypeScript。
-- 当前微博卡片已接入真实热搜 JSON 数据，知乎与 B站仍为 Express Mock API。
+- 当前微博、知乎卡片已接入真实热榜 JSON 数据，B站仍为 Express Mock API。
 - 首页数据已全部来自后端 `/api/hot` 聚合接口。
-- 真实知乎、B站 Provider 将在后续阶段逐一接入。
+- 真实 B站 Provider 将在后续阶段接入。
 
 ## 常用验证
 
@@ -87,3 +87,20 @@ curl "http://localhost:3001/api/hot/weibo?limit=10&refresh=1"
 - 返回 `success` 且 `items` 不少于 10 条：微博真实数据正常。
 - 返回 `error`：查看后端终端中的 `[provider error] weibo ...` 日志，通常是上游网络不可达、HTTP 状态异常或字段结构变化。
 - 聚合接口 `/api/hot` 中微博失败但知乎、B站仍显示：这是预期的单平台失败隔离。
+
+## 知乎真实数据排查
+
+知乎 Provider 位于 `server/src/providers/zhihu.ts`，当前使用固定 JSON 数据源 `https://www.zhihu.com/api/v4/creators/rank/hot?domain=0&period=hour`。这个接口返回真实知乎热门问题；常见的 `topstory/hot-lists` 接口在无登录环境会返回 401，所以当前阶段选择无需 Cookie 的公开 JSON 数据源。
+
+若知乎卡片显示失败，可按顺序检查：
+
+```bash
+cd server
+npm run dev
+curl "http://localhost:3001/api/hot/zhihu?limit=10&refresh=1"
+curl "http://localhost:3001/api/hot?limit=10&refresh=1"
+```
+
+- 单平台接口返回 `success` 且 `items` 不少于 10 条：知乎真实数据正常。
+- 聚合接口中微博与知乎均为 `success`：Day 14 并行验证通过。
+- 返回 `error`：查看后端终端中的 `[provider error] zhihu ...` 日志，通常是上游网络不可达、HTTP 状态异常或字段结构变化。

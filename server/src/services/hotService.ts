@@ -2,13 +2,14 @@ import { platformMeta, sources } from '../config/platforms';
 import { createMockProvider } from '../providers/mock';
 import type { HotProvider } from '../providers/types';
 import { createWeiboProvider } from '../providers/weibo';
+import { createZhihuProvider } from '../providers/zhihu';
 import type { HotPlatform, HotResponse, SourceKey } from '../types/hot';
 import { getCache, setCache } from '../utils/cache';
 import { env } from '../utils/env';
 
 const providers: Record<SourceKey, HotProvider> = {
   weibo: createWeiboProvider(),
-  zhihu: createMockProvider('zhihu'),
+  zhihu: createZhihuProvider(),
   bilibili: createMockProvider('bilibili'),
 };
 

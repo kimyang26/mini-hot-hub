@@ -16,12 +16,30 @@ const weiboResponse = {
   },
 };
 
+const zhihuResponse = {
+  data: Array.from({ length: 12 }, (_, index) => ({
+    question: {
+      id: `zhihu-${index + 1}`,
+      title: `知乎真实热榜 ${index + 1}`,
+      url: `https://www.zhihu.com/question/${index + 1}`,
+    },
+    reaction: {
+      new_pv: 200000 + index,
+    },
+  })),
+};
+
 describe('hot routes', () => {
   beforeEach(() => {
     clearCache();
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => new Response(JSON.stringify(weiboResponse), { status: 200 })),
+      vi.fn(async (input: string | URL | Request) => {
+        const url = input instanceof Request ? input.url : String(input);
+        const body = url.includes('zhihu.com') ? zhihuResponse : weiboResponse;
+
+        return new Response(JSON.stringify(body), { status: 200 });
+      }),
     );
   });
 
@@ -35,13 +53,16 @@ describe('hot routes', () => {
     expect(response.body).toEqual({ ok: true });
   });
 
-  it('returns aggregated platforms with real weibo provider data', async () => {
+  it('returns aggregated platforms with real weibo and zhihu provider data', async () => {
     const response = await request(app).get('/api/hot?limit=10').expect(200);
 
     expect(response.body.platforms).toHaveLength(3);
     expect(response.body.platforms[0].source).toBe('weibo');
     expect(response.body.platforms[0].items).toHaveLength(10);
     expect(response.body.platforms[0].items[0].title).toBe('微博真实热搜 1');
+    expect(response.body.platforms[1].source).toBe('zhihu');
+    expect(response.body.platforms[1].items).toHaveLength(10);
+    expect(response.body.platforms[1].items[0].title).toBe('知乎真实热榜 1');
   });
 
   it('returns one platform by source', async () => {
@@ -49,6 +70,14 @@ describe('hot routes', () => {
 
     expect(response.body.source).toBe('weibo');
     expect(response.body.items).toHaveLength(3);
+  });
+
+  it('returns zhihu platform by source', async () => {
+    const response = await request(app).get('/api/hot/zhihu?limit=3&refresh=1').expect(200);
+
+    expect(response.body.source).toBe('zhihu');
+    expect(response.body.items).toHaveLength(3);
+    expect(response.body.items[0].title).toBe('知乎真实热榜 1');
   });
 
   it('rejects an unknown source', async () => {
