@@ -61,6 +61,44 @@ cd server && npm run build
 cd server && npm run test
 ```
 
+## 部署前检查表
+
+### 本地端口
+
+- 前端 Vite 默认端口：`5173`，本地访问 `http://localhost:5173`。
+- 后端 Express 默认端口：`3001`，本地访问 `http://localhost:3001`。
+- 本地开发时确认两个终端同时运行：`client npm run dev` 与 `server npm run dev`。
+- 若端口被占用，先停止旧进程或同步调整 Vite proxy、后端 `PORT` 与文档中的访问地址。
+
+### 环境变量
+
+前端部署到 Vercel 前确认：
+
+- Root Directory：`client`
+- Build Command：`npm run build`
+- Output Directory：`dist`
+- `VITE_API_BASE=https://<railway-backend-domain>`，只填写公开后端 API 域名，不放 token、Cookie 或密钥。
+
+后端部署到 Railway 前确认：
+
+- Root Directory / 服务目录：`server`
+- Build Command：`npm run build`
+- Start Command：`npm start`
+- `NODE_ENV=production`
+- `CACHE_TTL=600`
+- `CLIENT_ORIGIN=https://<vercel-client-domain>`，用于限制生产 CORS 来源。
+- 如需自定义端口，使用平台提供的 `PORT`；本地默认仍为 `3001`。
+
+### API 地址
+
+部署前逐项检查：
+
+- 后端健康检查：`https://<railway-backend-domain>/api/health` 返回 `{ "ok": true }`。
+- 聚合接口：`https://<railway-backend-domain>/api/hot?limit=10` 返回微博、知乎、B站三组平台数据。
+- 单平台接口：`/api/hot/weibo`、`/api/hot/zhihu`、`/api/hot/bilibili` 均可单独访问。
+- Vercel 前端 Network 面板中的 `/api/hot` 请求应指向 Railway 后端域名。
+- 三平台任一失败时，页面应显示该平台错误态，其他平台仍可浏览。
+
 ## 缓存验证
 
 当前 Express API 使用服务端内存 `Map` 缓存成功结果，缓存 key 按平台隔离，例如 `hot:weibo`、`hot:zhihu`、`hot:bilibili`。

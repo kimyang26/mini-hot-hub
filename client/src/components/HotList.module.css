@@ -23,6 +23,10 @@
   border-bottom: 0;
 }
 
+.item:hover {
+  background: rgb(31 111 235 / 4%);
+}
+
 .rank {
   grid-area: rank;
   display: inline-grid;
@@ -68,6 +72,9 @@
 
 .title:hover {
   color: #1f6feb;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 .heat {

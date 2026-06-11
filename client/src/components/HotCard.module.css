@@ -8,6 +8,16 @@
   border-radius: 8px;
   background: var(--surface);
   box-shadow: var(--shadow);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.card:hover {
+  border-color: rgb(31 111 235 / 24%);
+  box-shadow: 0 18px 46px rgb(40 48 63 / 12%);
+  transform: translateY(-2px);
 }
 
 .card::before {
@@ -152,6 +162,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .card:hover {
+    transform: none;
+  }
+
   .skeletonLine {
     animation: none;
   }

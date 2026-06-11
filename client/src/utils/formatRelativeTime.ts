@@ -1,10 +1,10 @@
-export function formatRelativeTime(isoTime?: string): string {
+export function formatRelativeTime(isoTime?: string, now = Date.now()): string {
   if (!isoTime) {
     return '暂无更新时间';
   }
 
   const timestamp = new Date(isoTime).getTime();
-  const diffMs = Date.now() - timestamp;
+  const diffMs = now - timestamp;
 
   if (Number.isNaN(timestamp) || diffMs < 0) {
     return '刚刚更新';
@@ -17,12 +17,12 @@ export function formatRelativeTime(isoTime?: string): string {
   }
 
   if (diffMinutes < 60) {
-    return `更新于 ${diffMinutes} 分钟前`;
+    return `${diffMinutes} 分钟前`;
   }
 
   const diffHours = Math.floor(diffMinutes / 60);
   if (diffHours < 24) {
-    return `更新于 ${diffHours} 小时前`;
+    return `${diffHours} 小时前`;
   }
 
   return `更新于 ${new Date(isoTime).toLocaleString('zh-CN', {

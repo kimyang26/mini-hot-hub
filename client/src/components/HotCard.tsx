@@ -6,6 +6,7 @@ import styles from './HotCard.module.css';
 interface HotCardProps {
   platform: HotPlatform;
   isLoading?: boolean;
+  now: number;
   onRetry?: () => void;
 }
 
@@ -15,7 +16,7 @@ const sourceAccentClass: Record<HotPlatform['source'], string> = {
   bilibili: styles.bilibili,
 };
 
-export function HotCard({ platform, isLoading = false, onRetry }: HotCardProps) {
+export function HotCard({ platform, isLoading = false, now, onRetry }: HotCardProps) {
   const hasItems = platform.status === 'success' && platform.items.length > 0;
   const itemCountLabel = isLoading ? '加载中' : `${platform.items.length} 条`;
 
@@ -61,7 +62,7 @@ export function HotCard({ platform, isLoading = false, onRetry }: HotCardProps) 
         {isLoading
           ? '正在准备数据'
           : platform.status === 'success'
-            ? formatRelativeTime(platform.updatedAt)
+            ? formatRelativeTime(platform.updatedAt, now)
             : '等待可用数据'}
       </footer>
     </article>
