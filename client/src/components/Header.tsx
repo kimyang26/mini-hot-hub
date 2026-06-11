@@ -14,7 +14,7 @@ export function Header({ generatedAt }: HeaderProps) {
         <p className={styles.subtitle}>一页扫过微博、知乎与 B站正在被讨论的热门内容。</p>
       </div>
       <div className={styles.meta}>
-        <span>真实 + Mock API</span>
+        <span>真实 API</span>
         <strong>{formatRelativeTime(generatedAt)}</strong>
       </div>
     </header>

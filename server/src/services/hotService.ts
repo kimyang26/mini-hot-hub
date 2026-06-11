@@ -1,5 +1,5 @@
 import { platformMeta, sources } from '../config/platforms';
-import { createMockProvider } from '../providers/mock';
+import { createBilibiliProvider } from '../providers/bilibili';
 import type { HotProvider } from '../providers/types';
 import { createWeiboProvider } from '../providers/weibo';
 import { createZhihuProvider } from '../providers/zhihu';
@@ -10,7 +10,7 @@ import { env } from '../utils/env';
 const providers: Record<SourceKey, HotProvider> = {
   weibo: createWeiboProvider(),
   zhihu: createZhihuProvider(),
-  bilibili: createMockProvider('bilibili'),
+  bilibili: createBilibiliProvider(),
 };
 
 function createErrorPlatform(source: SourceKey): HotPlatform {

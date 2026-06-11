@@ -36,9 +36,20 @@ npm run dev
 
 - `client/` 已初始化为 React + TypeScript + Vite + CSS Modules。
 - `server/` 已初始化为 Express + TypeScript。
-- 当前微博、知乎卡片已接入真实热榜 JSON 数据，B站仍为 Express Mock API。
+- 当前微博、知乎、B站卡片均已接入真实热榜 JSON 数据。
 - 首页数据已全部来自后端 `/api/hot` 聚合接口。
-- 真实 B站 Provider 将在后续阶段接入。
+
+## 数据来源说明
+
+所有外部数据都只在 Express 后端 `server/src/providers/` 中请求和转换，浏览器只请求本站 `/api/hot*` 接口。
+
+| 平台 | 数据源 | 当前说明 |
+|---|---|---|
+| 微博 | `https://weibo.com/ajax/statuses/hot_band` | 微博实时热搜 JSON；不使用 Cookie 或登录态 |
+| 知乎 | `https://www.zhihu.com/api/v4/creators/rank/hot?domain=0&period=hour` | 知乎热门问题 JSON；常见 `topstory/hot-lists` 无登录会返回 401 |
+| B站 | `https://api.bilibili.com/x/web-interface/popular?ps=20&pn=1` | B站热门视频 JSON；使用 BV 号生成原站视频链接 |
+
+三平台响应都会经过 Zod 校验和统一模型转换；空标题、非法链接或无效条目会被过滤。若单个平台上游失败，其余平台仍可正常展示。
 
 ## 常用验证
 
@@ -52,7 +63,7 @@ cd server && npm run test
 
 ## 缓存验证
 
-当前 Express Mock API 使用服务端内存 `Map` 缓存成功结果，缓存 key 按平台隔离，例如 `hot:weibo`、`hot:zhihu`、`hot:bilibili`。
+当前 Express API 使用服务端内存 `Map` 缓存成功结果，缓存 key 按平台隔离，例如 `hot:weibo`、`hot:zhihu`、`hot:bilibili`。
 
 默认 TTL 为 600 秒，可通过 `server/.env` 中的 `CACHE_TTL` 调整。选择 600 秒是因为当前 PRD 要求页面约 10 分钟更新一次：这个时间既能减少重复请求，也能保持热榜数据对 MVP 足够新鲜。
 
@@ -104,3 +115,20 @@ curl "http://localhost:3001/api/hot?limit=10&refresh=1"
 - 单平台接口返回 `success` 且 `items` 不少于 10 条：知乎真实数据正常。
 - 聚合接口中微博与知乎均为 `success`：Day 14 并行验证通过。
 - 返回 `error`：查看后端终端中的 `[provider error] zhihu ...` 日志，通常是上游网络不可达、HTTP 状态异常或字段结构变化。
+
+## B站真实数据排查
+
+B站 Provider 位于 `server/src/providers/bilibili.ts`，当前使用固定 JSON 数据源 `https://api.bilibili.com/x/web-interface/popular?ps=20&pn=1`。该接口返回 B站热门视频列表，Provider 使用 `bvid` 生成原站视频链接，并展示播放量。
+
+若 B站卡片显示失败，可按顺序检查：
+
+```bash
+cd server
+npm run dev
+curl "http://localhost:3001/api/hot/bilibili?limit=10&refresh=1"
+curl "http://localhost:3001/api/hot?limit=10&refresh=1"
+```
+
+- 单平台接口返回 `success` 且 `items` 不少于 10 条：B站真实数据正常。
+- 聚合接口中微博、知乎、B站均为 `success`：Day 15 全站检查通过。
+- 返回 `error`：查看后端终端中的 `[provider error] bilibili ...` 日志，通常是上游网络不可达、HTTP 状态异常或字段结构变化。

@@ -29,6 +29,20 @@ const zhihuResponse = {
   })),
 };
 
+const bilibiliResponse = {
+  code: 0,
+  data: {
+    list: Array.from({ length: 12 }, (_, index) => ({
+      title: `B站真实热门 ${index + 1}`,
+      bvid: `BV${index + 1}abc123456`,
+      short_link_v2: `https://b23.tv/BV${index + 1}abc123456`,
+      stat: {
+        view: 300000 + index,
+      },
+    })),
+  },
+};
+
 describe('hot routes', () => {
   beforeEach(() => {
     clearCache();
@@ -36,7 +50,11 @@ describe('hot routes', () => {
       'fetch',
       vi.fn(async (input: string | URL | Request) => {
         const url = input instanceof Request ? input.url : String(input);
-        const body = url.includes('zhihu.com') ? zhihuResponse : weiboResponse;
+        const body = url.includes('zhihu.com')
+          ? zhihuResponse
+          : url.includes('bilibili.com')
+            ? bilibiliResponse
+            : weiboResponse;
 
         return new Response(JSON.stringify(body), { status: 200 });
       }),
@@ -53,7 +71,7 @@ describe('hot routes', () => {
     expect(response.body).toEqual({ ok: true });
   });
 
-  it('returns aggregated platforms with real weibo and zhihu provider data', async () => {
+  it('returns aggregated platforms with three real providers', async () => {
     const response = await request(app).get('/api/hot?limit=10').expect(200);
 
     expect(response.body.platforms).toHaveLength(3);
@@ -63,6 +81,9 @@ describe('hot routes', () => {
     expect(response.body.platforms[1].source).toBe('zhihu');
     expect(response.body.platforms[1].items).toHaveLength(10);
     expect(response.body.platforms[1].items[0].title).toBe('知乎真实热榜 1');
+    expect(response.body.platforms[2].source).toBe('bilibili');
+    expect(response.body.platforms[2].items).toHaveLength(10);
+    expect(response.body.platforms[2].items[0].title).toBe('B站真实热门 1');
   });
 
   it('returns one platform by source', async () => {
@@ -78,6 +99,14 @@ describe('hot routes', () => {
     expect(response.body.source).toBe('zhihu');
     expect(response.body.items).toHaveLength(3);
     expect(response.body.items[0].title).toBe('知乎真实热榜 1');
+  });
+
+  it('returns bilibili platform by source', async () => {
+    const response = await request(app).get('/api/hot/bilibili?limit=3&refresh=1').expect(200);
+
+    expect(response.body.source).toBe('bilibili');
+    expect(response.body.items).toHaveLength(3);
+    expect(response.body.items[0].title).toBe('B站真实热门 1');
   });
 
   it('rejects an unknown source', async () => {
