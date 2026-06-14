@@ -113,9 +113,9 @@ Railway 配置如下：
 | 配置项 | 值 |
 |---|---|
 | Root Directory / 服务目录 | `server` |
-| Build Command | `npm run build` |
-| Start Command | `npm start` |
-| Health Check Path | `/api/health` |
+| Build Command | `npm run build`，已写入 `server/railway.json` |
+| Start Command | `npm start`，已写入 `server/railway.json` |
+| Health Check Path | `/api/health`，已写入 `server/railway.json` |
 
 ### 环境变量清单
 
