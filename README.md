@@ -65,17 +65,23 @@ cd server && npm run test
 
 本项目采用前后端分离部署：
 
-- 前端 `client/` 部署到 Vercel，产物目录为 `dist/`。
+- 前端 `client/` 当前部署到 Cloudflare Pages，产物目录为 `dist/`。
 - 后端 `server/` 部署到 Railway，运行 Express API。
 - 浏览器只请求本站后端 API；生产环境由 `VITE_API_BASE` 指向 Railway 后端地址。
+
+当前线上地址：
+
+- 前端：`https://mini-hot-hub-yq.pages.dev`
+- 后端：`https://mini-hot-hub-api-production.up.railway.app`
 
 ### 部署顺序
 
 1. 先部署后端 `server/` 到 Railway。
 2. 验证 Railway 后端地址的 `/api/health` 和 `/api/hot?limit=10`。
-3. 将 Railway 后端 HTTPS 地址填入 Vercel 前端环境变量 `VITE_API_BASE`。
-4. 部署前端 `client/` 到 Vercel。
-5. 打开 Vercel 前端页面，确认 Network 中 `/api/hot` 请求指向 Railway 后端。
+3. 构建前端时将 Railway 后端 HTTPS 地址写入 `VITE_API_BASE`。
+4. 部署前端 `client/dist/` 到 Cloudflare Pages。
+5. 将 Railway 的 `CLIENT_ORIGIN` 设置为 Cloudflare Pages 前端域名。
+6. 打开 Cloudflare Pages 前端页面，确认 Network 中 `/api/hot` 请求指向 Railway 后端。
 
 ### 前端部署准备
 
@@ -85,12 +91,11 @@ cd server && npm run test
 npm run build
 ```
 
-构建成功后应生成 `client/dist/`，Vercel 配置如下：
+构建成功后应生成 `client/dist/`，Cloudflare Pages 配置如下：
 
 | 配置项 | 值 |
 |---|---|
 | Root Directory | `client` |
-| Framework Preset | Vite |
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
 | 环境变量 | `VITE_API_BASE=https://<railway-backend-domain>` |
@@ -135,7 +140,7 @@ Railway 配置如下：
 
 ### 环境变量
 
-前端部署到 Vercel 前确认：
+前端部署到 Cloudflare Pages 前确认：
 
 - Root Directory：`client`
 - Build Command：`npm run build`
@@ -149,7 +154,7 @@ Railway 配置如下：
 - Start Command：`npm start`
 - `NODE_ENV=production`
 - `CACHE_TTL=600`
-- `CLIENT_ORIGIN=https://<vercel-client-domain>`，用于限制生产 CORS 来源。
+- `CLIENT_ORIGIN=https://<cloudflare-pages-domain>`，用于限制生产 CORS 来源。
 - 如需自定义端口，使用平台提供的 `PORT`；本地默认仍为 `3001`。
 
 ### API 地址
@@ -159,7 +164,7 @@ Railway 配置如下：
 - 后端健康检查：`https://<railway-backend-domain>/api/health` 返回 `{ "ok": true }`。
 - 聚合接口：`https://<railway-backend-domain>/api/hot?limit=10` 返回微博、知乎、B站三组平台数据。
 - 单平台接口：`/api/hot/weibo`、`/api/hot/zhihu`、`/api/hot/bilibili` 均可单独访问。
-- Vercel 前端 Network 面板中的 `/api/hot` 请求应指向 Railway 后端域名。
+- Cloudflare Pages 前端 Network 面板中的 `/api/hot` 请求应指向 Railway 后端域名。
 - 三平台任一失败时，页面应显示该平台错误态，其他平台仍可浏览。
 
 ## 缓存验证
