@@ -61,7 +61,70 @@ cd server && npm run build
 cd server && npm run test
 ```
 
-## 部署前检查表
+## Deploy 部署说明草稿
+
+本项目采用前后端分离部署：
+
+- 前端 `client/` 部署到 Vercel，产物目录为 `dist/`。
+- 后端 `server/` 部署到 Railway，运行 Express API。
+- 浏览器只请求本站后端 API；生产环境由 `VITE_API_BASE` 指向 Railway 后端地址。
+
+### 部署顺序
+
+1. 先部署后端 `server/` 到 Railway。
+2. 验证 Railway 后端地址的 `/api/health` 和 `/api/hot?limit=10`。
+3. 将 Railway 后端 HTTPS 地址填入 Vercel 前端环境变量 `VITE_API_BASE`。
+4. 部署前端 `client/` 到 Vercel。
+5. 打开 Vercel 前端页面，确认 Network 中 `/api/hot` 请求指向 Railway 后端。
+
+### 前端部署准备
+
+在 `client/` 目录执行：
+
+```bash
+npm run build
+```
+
+构建成功后应生成 `client/dist/`，Vercel 配置如下：
+
+| 配置项 | 值 |
+|---|---|
+| Root Directory | `client` |
+| Framework Preset | Vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| 环境变量 | `VITE_API_BASE=https://<railway-backend-domain>` |
+
+`VITE_API_BASE` 的含义：生产环境前端访问的后端 API 根地址。例如 Railway 后端域名是 `https://mini-hot-hub-api.up.railway.app`，则前端会请求 `https://mini-hot-hub-api.up.railway.app/api/hot`。该变量会进入浏览器构建产物，只能放公开后端地址，不能放 token、Cookie 或密钥。
+
+本地开发时 `client/.env.example` 中的 `VITE_API_BASE=` 可以留空，前端会通过 Vite proxy 请求本机 `http://localhost:3001`。
+
+### 后端部署准备
+
+在 `server/` 目录执行：
+
+```bash
+npm run build
+npm run start
+```
+
+Railway 配置如下：
+
+| 配置项 | 值 |
+|---|---|
+| Root Directory / 服务目录 | `server` |
+| Build Command | `npm run build` |
+| Start Command | `npm start` |
+| Health Check Path | `/api/health` |
+
+### 环境变量清单
+
+| 变量 | 说明 |
+|---|---|
+| `PORT` | 后端端口，本地可用 `3001`；Railway 通常会自动注入生产端口。 |
+| `CACHE_TTL` | 缓存秒数，默认 `600`，表示约 10 分钟缓存。 |
+| `CLIENT_ORIGIN` | 生产前端域名，用于 CORS，例如 `https://<vercel-client-domain>`。 |
+| `NODE_ENV` | 运行环境；生产部署设置为 `production`。 |
 
 ### 本地端口
 
