@@ -133,6 +133,21 @@ describe('hot routes', () => {
     }
   });
 
+  it('does not shrink cached platforms after a smaller limit request', async () => {
+    const smallResponse = await request(app).get('/api/hot?limit=3').expect(200);
+    const fullResponse = await request(app).get('/api/hot?limit=10').expect(200);
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+
+    for (const platform of smallResponse.body.platforms) {
+      expect(platform.items).toHaveLength(3);
+    }
+
+    for (const platform of fullResponse.body.platforms) {
+      expect(platform.items).toHaveLength(10);
+    }
+  });
+
   it('returns one platform by source', async () => {
     const response = await request(app).get('/api/hot/weibo?limit=3&refresh=1').expect(200);
 

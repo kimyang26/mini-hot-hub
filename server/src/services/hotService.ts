@@ -12,6 +12,7 @@ const providers: Record<SourceKey, HotProvider> = {
   zhihu: createZhihuProvider(),
   bilibili: createBilibiliProvider(),
 };
+const cacheFetchLimit = 20;
 
 function createErrorPlatform(source: SourceKey): HotPlatform {
   return {
@@ -43,12 +44,15 @@ export async function getHotPlatform(
   console.info(`[cache miss] ${cacheKey}`);
 
   try {
-    const platform = await providers[source].fetchHot(limit);
+    const platform = await providers[source].fetchHot(cacheFetchLimit);
     if (platform.status === 'success') {
       setCache(cacheKey, platform, env.CACHE_TTL);
     }
 
-    return platform;
+    return {
+      ...platform,
+      items: platform.items.slice(0, limit),
+    };
   } catch (error) {
     console.error(
       `[provider error] ${source}`,
