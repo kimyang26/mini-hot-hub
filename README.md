@@ -63,25 +63,24 @@ cd server && npm run test
 
 ## Deploy 部署说明草稿
 
-本项目采用前后端分离部署：
+本项目当前采用 Cloudflare Pages 托管前端，并使用 Cloudflare Pages Functions 提供线上 API：
 
-- 前端 `client/` 当前部署到 Cloudflare Pages，产物目录为 `dist/`。
-- 后端 `server/` 部署到 Railway，运行 Express API。
-- 浏览器只请求本站后端 API；生产环境由 `VITE_API_BASE` 指向 Railway 后端地址。
+- 前端 `client/` 部署到 Cloudflare Pages，产物目录为 `dist/`。
+- 线上 API 使用 `client/functions/api/*`，浏览器请求同域 `/api/hot*`。
+- `server/` 仍保留 Express 实现，用于本地开发、测试和后续可选后端部署。
 
 当前线上地址：
 
 - 前端：`https://mini-hot-hub-yq.pages.dev`
-- 后端：`https://mini-hot-hub-api-production.up.railway.app`
+- 健康检查：`https://mini-hot-hub-yq.pages.dev/api/health`
+- 聚合接口：`https://mini-hot-hub-yq.pages.dev/api/hot`
 
 ### 部署顺序
 
-1. 先部署后端 `server/` 到 Railway。
-2. 验证 Railway 后端地址的 `/api/health` 和 `/api/hot?limit=10`。
-3. 构建前端时将 Railway 后端 HTTPS 地址写入 `VITE_API_BASE`。
-4. 部署前端 `client/dist/` 到 Cloudflare Pages。
-5. 将 Railway 的 `CLIENT_ORIGIN` 设置为 Cloudflare Pages 前端域名。
-6. 打开 Cloudflare Pages 前端页面，确认 Network 中 `/api/hot` 请求指向 Railway 后端。
+1. 在 `client/` 目录执行 `npm run build`。
+2. 使用 Wrangler 发布 `client/dist/` 到 Cloudflare Pages。
+3. Cloudflare Pages 会同时发布 `client/functions/api/*` 中的 Functions。
+4. 打开 Cloudflare Pages 前端页面，确认 Network 中 `/api/hot` 请求为同域接口。
 
 ### 前端部署准备
 
@@ -98,9 +97,9 @@ npm run build
 | Root Directory | `client` |
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
-| 环境变量 | `VITE_API_BASE=https://<railway-backend-domain>` |
+| 环境变量 | `VITE_API_BASE` 留空，使用同域 `/api` |
 
-`VITE_API_BASE` 的含义：生产环境前端访问的后端 API 根地址。例如 Railway 后端域名是 `https://mini-hot-hub-api.up.railway.app`，则前端会请求 `https://mini-hot-hub-api.up.railway.app/api/hot`。该变量会进入浏览器构建产物，只能放公开后端地址，不能放 token、Cookie 或密钥。
+`VITE_API_BASE` 的含义：生产环境前端访问的后端 API 根地址。当前 Cloudflare Pages 版本使用同域 Functions，所以该变量留空，前端会请求 `/api/hot`。如果未来重新部署独立后端，再填入公开后端地址；该变量会进入浏览器构建产物，不能放 token、Cookie 或密钥。
 
 本地开发时 `client/.env.example` 中的 `VITE_API_BASE=` 可以留空，前端会通过 Vite proxy 请求本机 `http://localhost:3001`。
 
@@ -145,7 +144,7 @@ Railway 配置如下：
 - Root Directory：`client`
 - Build Command：`npm run build`
 - Output Directory：`dist`
-- `VITE_API_BASE=https://<railway-backend-domain>`，只填写公开后端 API 域名，不放 token、Cookie 或密钥。
+- `VITE_API_BASE` 留空，使用 Cloudflare Pages Functions 的同域 `/api`。
 
 后端部署到 Railway 前确认：
 
@@ -161,10 +160,10 @@ Railway 配置如下：
 
 部署前逐项检查：
 
-- 后端健康检查：`https://<railway-backend-domain>/api/health` 返回 `{ "ok": true }`。
-- 聚合接口：`https://<railway-backend-domain>/api/hot?limit=10` 返回微博、知乎、B站三组平台数据。
+- 健康检查：`https://mini-hot-hub-yq.pages.dev/api/health` 返回 `{ "ok": true }`。
+- 聚合接口：`https://mini-hot-hub-yq.pages.dev/api/hot?limit=10` 返回平台数据。
 - 单平台接口：`/api/hot/weibo`、`/api/hot/zhihu`、`/api/hot/bilibili` 均可单独访问。
-- Cloudflare Pages 前端 Network 面板中的 `/api/hot` 请求应指向 Railway 后端域名。
+- Cloudflare Pages 前端 Network 面板中的 `/api/hot` 请求应为同域请求。
 - 三平台任一失败时，页面应显示该平台错误态，其他平台仍可浏览。
 
 ## 缓存验证
